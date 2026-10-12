@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard – Student Task Manager</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============ TOP BAR ============ -->
+  <header class="topbar">
+    <div>
+      <h1>📚 Student Task Manager</h1>
+      <p id="welcome"></p>
+    </div>
+    <button type="button" class="btn btn-ghost" id="logout-btn">Log out</button>
+  </header>
+
+  <!-- ============ TABS ============ -->
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <button type="button" class="tab is-active" data-tab="overview">📊 Overview</button>
+    <button type="button" class="tab" data-tab="tasks">✅ Tasks</button>
+    <button type="button" class="tab" data-tab="attendance">🗓 Attendance</button>
+    <button type="button" class="tab" data-tab="subjects">📖 Subjects</button>
+  </nav>
+
+  <!-- ====================================================
+       TAB 1: OVERVIEW
+       ==================================================== -->
+  <section id="tab-overview" class="panel">
+
+    <h2 class="section-title">Attendance</h2>
+    <div class="stats">
+      <div class="stat"><span id="att-total" class="stat-num">0</span><span class="stat-label">Total classes</span></div>
+      <div class="stat"><span id="att-present" class="stat-num">0</span><span class="stat-label">Attended</span></div>
+      <div class="stat"><span id="att-percent" class="stat-num">0%</span><span class="stat-label">Attendance %</span></div>
+      <div class="stat"><span id="att-status" class="stat-num small">–</span><span class="stat-label">Status (min 75%)</span></div>
+    </div>
+    <div class="progress" id="att-progress" role="progressbar" aria-label="Attendance percentage"
+         aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+      <div class="progress-bar" id="att-bar"></div>
+    </div>
+    <p class="progress-text" id="att-types"></p>
+
+    <h2 class="section-title">Work</h2>
+    <div class="stats">
+      <div class="stat"><span id="stat-total" class="stat-num">0</span><span class="stat-label">Total tasks</span></div>
+      <div class="stat"><span id="stat-pending" class="stat-num">0</span><span class="stat-label">Pending / work left</span></div>
+      <div class="stat"><span id="stat-done" class="stat-num">0</span><span class="stat-label">Completed</span></div>
+      <div class="stat stat--alert"><span id="stat-overdue" class="stat-num">0</span><span class="stat-label">Overdue</span></div>
+    </div>
+    <div class="progress" id="progress" role="progressbar" aria-label="Work completed"
+         aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+    <p class="progress-text" id="progress-text"></p>
+
+    <h2 class="section-title">Subject summary</h2>
+    <div class="table-wrap">
+      <table class="table" id="summary-table">
+        <thead>
+          <tr>
+            <th>Subject</th><th>Type</th><th>Attendance</th>
+            <th>Pending</th><th>Completed</th><th>Work left</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ====================================================
+       TAB 2: TASKS
+       ==================================================== -->
+  <section id="tab-tasks" class="panel" hidden>
+
+    <div class="toolbar">
+      <button type="button" class="btn btn-primary" id="add-btn">＋ Add task</button>
+      <input type="search" id="search" class="search" placeholder="Search tasks…" aria-label="Search tasks">
+      <select id="subject-filter" class="select" aria-label="Filter by subject"></select>
+      <select id="sort" class="select" aria-label="Sort tasks">
+        <option value="due">Sort: Due date</option>
+        <option value="priority">Sort: Priority</option>
+        <option value="newest">Sort: Newest first</option>
+        <option value="title">Sort: Title (A–Z)</option>
+      </select>
+    </div>
+
+    <div class="filters">
+      <div class="filter-group" role="group" aria-label="Filter by status">
+        <span class="filter-title">Status</span>
+        <button type="button" class="chip is-active" data-filter="status" data-value="all"       aria-pressed="true">All</button>
+        <button type="button" class="chip"           data-filter="status" data-value="pending"   aria-pressed="false">Pending</button>
+        <button type="button" class="chip"           data-filter="status" data-value="completed" aria-pressed="false">Completed</button>
+      </div>
+
+      <div class="filter-group" role="group" aria-label="Filter by priority">
+        <span class="filter-title">Priority</span>
+        <button type="button" class="chip is-active" data-filter="priority" data-value="all"    aria-pressed="true">All</button>
+        <button type="button" class="chip"           data-filter="priority" data-value="high"   aria-pressed="false">High</button>
+        <button type="button" class="chip"           data-filter="priority" data-value="medium" aria-pressed="false">Medium</button>
+        <button type="button" class="chip"           data-filter="priority" data-value="low"    aria-pressed="false">Low</button>
+      </div>
+
+      <div class="filter-group" role="group" aria-label="Filter by subject type">
+        <span class="filter-title">Type</span>
+        <button type="button" class="chip is-active" data-filter="type" data-value="all"    aria-pressed="true">All</button>
+        <button type="button" class="chip"           data-filter="type" data-value="theory" aria-pressed="false">Theory</button>
+        <button type="button" class="chip"           data-filter="type" data-value="lab"    aria-pressed="false">Lab</button>
+      </div>
+    </div>
+
+    <div id="task-list" class="task-list" aria-live="polite"></div>
+    <p id="empty" class="empty" hidden>No tasks match your filters. 🎉</p>
+
+    <div class="app-footer">
+      <button type="button" class="link-btn" id="clear-done">Clear completed tasks</button>
+    </div>
+  </section>
+
+  <!-- ====================================================
+       TAB 3: ATTENDANCE
+       ==================================================== -->
+  <section id="tab-attendance" class="panel" hidden>
+
+    <div class="toolbar">
+      <label class="date-pick">Date
+        <input type="date" id="att-date">
+      </label>
+      <button type="button" class="btn btn-ghost" id="att-all-present">Mark all present</button>
+    </div>
+
+    <div id="att-check"></div>
+
+    <h2 class="section-title">Attendance summary</h2>
+    <div class="table-wrap">
+      <table class="table" id="att-table">
+        <thead>
+          <tr>
+            <th>Subject</th><th>Type</th><th>Attended</th><th>Total</th>
+            <th>Absent</th><th>Percentage</th><th>Advice</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ====================================================
+       TAB 4: SUBJECTS
+       ==================================================== -->
+  <section id="tab-subjects" class="panel" hidden>
+
+    <form id="subject-form" class="subject-form" novalidate>
+      <input type="text" id="subject-name" maxlength="50" placeholder="Subject name, e.g. Data Structures" aria-label="Subject name">
+      <select id="subject-type" aria-label="Subject type">
+        <option value="theory">Theory</option>
+        <option value="lab">Lab</option>
+      </select>
+      <button type="submit" class="btn btn-primary">＋ Add subject</button>
+    </form>
+    <p class="error" id="subject-error" hidden></p>
+
+    <div id="subject-list" class="subject-list"></div>
+  </section>
+
+</div>
+
+<!-- ============ ADD / EDIT TASK DIALOG ============ -->
+<dialog id="task-dialog" class="dialog" aria-labelledby="dialog-title">
+  <form id="task-form" novalidate>
+    <h2 id="dialog-title">Add task</h2>
+    <input type="hidden" id="task-id">
+
+    <div class="form-row">
+      <label for="task-title">Title <span class="req">*</span></label>
+      <input type="text" id="task-title" maxlength="80" placeholder="e.g. Physics lab report" required>
+      <small class="error" id="title-error" hidden>Please enter a title.</small>
+    </div>
+
+    <div class="form-row">
+      <label for="task-subject">Subject</label>
+      <select id="task-subject"></select>
+    </div>
+
+    <div class="form-row">
+      <label for="task-desc">Description</label>
+      <textarea id="task-desc" rows="3" maxlength="300" placeholder="Add some details…"></textarea>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-row">
+        <label for="task-due">Due date</label>
+        <input type="date" id="task-due">
+      </div>
+      <div class="form-row">
+        <label for="task-priority">Priority</label>
+        <select id="task-priority">
+          <option value="high">High</option>
+          <option value="medium" selected>Medium</option>
+          <option value="low">Low</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="dialog-actions">
+      <button type="button" class="btn btn-ghost" id="cancel-btn">Cancel</button>
+      <button type="submit" class="btn btn-primary" id="save-btn">Save task</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Order matters -->
+<script src="js/storage.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/attendance.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>

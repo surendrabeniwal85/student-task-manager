@@ -1,0 +1,57 @@
+/* ---------- Tablets (≤ 768px) ---------- */
+@media (max-width: 768px) {
+  .app-header h1 { font-size: 1.6rem; }
+
+  .task-list {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+}
+
+/* ---------- Phones (≤ 560px) ---------- */
+@media (max-width: 560px) {
+  .app { padding: 16px 12px 40px; }
+  .app-header h1 { font-size: 1.4rem; }
+
+  .stats { grid-template-columns: repeat(2, 1fr); }
+
+  .toolbar { flex-direction: column; align-items: stretch; }
+  .toolbar .btn { width: 100%; }
+  .sort select { width: 100%; }
+
+  .filter-group { width: 100%; justify-content: center; }
+  .filter-title { width: 100%; text-align: center; }
+
+  .task-list { grid-template-columns: 1fr; }
+
+  .btn-edit, .btn-delete { padding: 11px 12px; }   /* bigger tap targets */
+  .chip { padding: 8px 14px; }
+
+  .form-grid { grid-template-columns: 1fr; }
+  .dialog-actions .btn { flex: 1; }
+}
+
+/* ---------- Respect reduced-motion preference ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ---------- V2 additions ---------- */
+@media (max-width: 560px) {
+  .topbar h1 { font-size: 1.3rem; }
+  .tab { padding: 10px 12px; font-size: 0.9rem; }
+
+  .toolbar .select,
+  .date-pick { width: 100%; }
+  .date-pick input { flex: 1; }
+
+  .att-row { flex-direction: column; align-items: flex-start; }
+  .att-buttons { width: 100%; }
+  .att-buttons .btn { flex: 1; }
+
+  .subject-form select,
+  .subject-form .btn { width: 100%; }
+}
